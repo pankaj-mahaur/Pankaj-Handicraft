@@ -322,5 +322,67 @@
         <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
         <!-- SCRIPT LINK -->
         <script src="script.js"></script>
+
+        <!-- Custom cursor -->
+        <svg class="custom-cursor" id="cursor" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 32 32">
+            <path d="M16 2C8 12 8 20 16 30C24 20 24 12 16 2Z" fill="url(#gradientPink)"/>
+            <defs>
+                <linearGradient id="gradientPink" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff9a9e" />
+                    <stop offset="100%" stop-color="#fad0c4" />
+                </linearGradient>
+            </defs>
+        </svg>
+        
+        <script>
+            const cursor = document.getElementById("cursor");
+            const trailContainer = document.createElement("div");
+            document.body.appendChild(trailContainer);
+            let trails = [];
+            let isMoving = false;
+            let moveTimeout;
+    
+            for (let i = 0; i < 10; i++) { 
+                let trail = document.createElement("div");
+                trail.className = "trail";
+                trail.innerHTML = `<svg width="30" height="30" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 2C8 12 8 20 16 30C24 20 24 12 16 2Z" fill="url(#gradientPink)"/>
+                </svg>`;
+                trail.style.position = "absolute";
+                trail.style.opacity = "0";
+                trailContainer.appendChild(trail);
+                trails.push(trail);
+            }
+    
+            document.addEventListener("mousemove", (e) => {
+                trails.forEach((trail) => {
+                    trail.style.animation = "none";
+                });
+                isMoving = true;
+                clearTimeout(moveTimeout);
+                cursor.style.left = `${e.pageX}px`;
+                cursor.style.top = `${e.pageY}px`;
+                
+                trails.forEach((trail, index) => {
+                    setTimeout(() => {
+                        trail.style.left = `${e.pageX}px`;
+                        trail.style.top = `${e.pageY}px`;
+                        trail.style.opacity = "1";
+                    }, index * 50);
+                });
+                
+                moveTimeout = setTimeout(() => {
+                    isMoving = false;
+                    trails.forEach((trail, index) => {
+                        setTimeout(() => {
+                            trail.style.left = `${cursor.style.left}`;
+                            trail.style.top = `${cursor.style.top}`;
+                            trail.style.opacity = "1";
+                            trail.style.animation = `orbit ${Math.random() * 3 + 2}s infinite linear`;
+                        }, index * 500); // Delay each trail by 0.5 seconds
+                    });
+                }, 2000);
+            });
+        </script>
     </body>
 </html>
